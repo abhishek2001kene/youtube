@@ -1,8 +1,11 @@
 import React from 'react'
+import { Outlet } from 'react-router-dom'
 
 function Home() {
   return (
-    <div className="text-6xl text-blue-500">Home</div>
+    <div>
+      <Outlet/>
+    </div>
 
   )
 }
