@@ -5,7 +5,9 @@ const storage = multer.diskStorage({
         cb(null,  "./public/temp")
     },
     filename: function (res, file, cb) {
-        cb(null, file.originalname)
+        // cb(null, file.originalname)
+        const uniqueSuffix = Date.now() + '-'+ Math.round(Math.random() * 1E9)
+        cb(null, file.originalname + '-' + uniqueSuffix)
     }
 })
 

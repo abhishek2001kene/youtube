@@ -6,6 +6,7 @@ import {ApiResponce} from "../utils/ApiResponce.js"
 import { json } from "express";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import fs from "fs"
 
 
 
@@ -44,6 +45,7 @@ const registerUser = asyncHandler(async (req, res) => {
     
     if(existedUser){
         throw new ApiError(409, "User with email Or Username already existed")
+      
     }
 
 
@@ -51,6 +53,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const avatarLocalPath = req.files?.avatar[0]?.path   
     //  const coverImageLocalPath = req.files?.coverImage[0]?.path 
 
+    
+    let coverImageUrl;
     let coverImageLocalPath;
     if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage[0].path){
 
@@ -64,7 +68,9 @@ const avatarLocalPath = req.files?.avatar[0]?.path
 
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+   if(coverImageLocalPath){
+    coverImageUrl = await uploadOnCloudinary(coverImageLocalPath)
+   }
 
 
     if(!avatar){
@@ -74,8 +80,14 @@ const avatarLocalPath = req.files?.avatar[0]?.path
 
     const user = await User.create({
         fullName,
-        avatar: avatar.url,
-        coverImage : coverImage?.url || "",
+        avatar: {
+            url : avatar.url,
+            id : avatar.public_id
+        },
+        coverImage : {
+            url : coverImageUrl?.url || "",
+            id : coverImageUrl?.public_id
+        },
         email,
         username,
         password,
